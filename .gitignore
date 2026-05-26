@@ -1,0 +1,10 @@
+target/
+maven-wrapper-tmp/
+maven-wrapper.zip
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+*.log
+.env

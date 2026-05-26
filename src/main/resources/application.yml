@@ -1,0 +1,18 @@
+spring:
+  main:
+    web-application-type: none
+
+banxico:
+  token: ${BANXICO_TOKEN}
+
+dynamics:
+  base-url: ${DYNAMICS_BASE_URL}
+  tenant-id: ${DYNAMICS_TENANT_ID}
+  client-id: ${DYNAMICS_CLIENT_ID}
+  client-secret: ${DYNAMICS_CLIENT_SECRET}
+  scope: https://olnatura-produccion.operations.dynamics.com/.default
+
+logging:
+  level:
+    root: INFO
+    com.olnatura: INFO
