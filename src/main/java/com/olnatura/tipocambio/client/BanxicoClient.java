@@ -4,35 +4,47 @@ import com.olnatura.tipocambio.config.BanxicoProperties;
 import com.olnatura.tipocambio.model.banxico.BanxicoResponse;
 import com.olnatura.tipocambio.model.banxico.Dato;
 import com.olnatura.tipocambio.model.banxico.Series;
+import com.olnatura.tipocambio.util.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
 public class BanxicoClient {
 
-    private static final String BANXICO_URL =
-            "https://www.banxico.org.mx/SieAPIRest/service/v1/series/SF60653/datos/oportuno";
+    private static final String SERIE_FIX = "SF43718";
+    private static final DateTimeFormatter BANXICO_PATH_DATE = DateTimeFormatter.ISO_LOCAL_DATE;
 
     private final RestClient restClient;
     private final BanxicoProperties banxicoProperties;
 
-    public BigDecimal obtenerTipoCambioParaPagos() {
+    public Map<LocalDate, BigDecimal> obtenerMapaFix(LocalDate desde, LocalDate hasta) {
+        String url = String.format(
+                "https://www.banxico.org.mx/SieAPIRest/service/v1/series/%s/datos/%s/%s",
+                SERIE_FIX,
+                desde.format(BANXICO_PATH_DATE),
+                hasta.format(BANXICO_PATH_DATE));
+
         BanxicoResponse response = restClient.get()
-                .uri(BANXICO_URL)
+                .uri(url)
                 .header("Bmx-Token", banxicoProperties.getToken())
                 .header("Accept", "application/json")
                 .retrieve()
                 .body(BanxicoResponse.class);
 
-        return extraerTipoCambio(response);
+        return parsearMapaFix(response);
     }
 
-    static BigDecimal extraerTipoCambio(BanxicoResponse response) {
+    static Map<LocalDate, BigDecimal> parsearMapaFix(BanxicoResponse response) {
         if (response == null || response.getBmx() == null) {
             throw new IllegalStateException("Respuesta Banxico sin estructura bmx");
         }
@@ -42,16 +54,32 @@ public class BanxicoClient {
         }
         List<Dato> datos = series.get(0).getDatos();
         if (datos == null || datos.isEmpty()) {
-            throw new IllegalStateException("Respuesta Banxico sin datos");
+            return Collections.emptyMap();
         }
-        String valor = datos.get(0).getDato();
+
+        Map<LocalDate, BigDecimal> mapa = new HashMap<>();
+        for (Dato dato : datos) {
+            if (dato.getFecha() == null || esNoDisponible(dato.getDato())) {
+                continue;
+            }
+            LocalDate fecha = DateUtils.parseBanxicoDate(dato.getFecha());
+            mapa.put(fecha, parsearValor(dato.getDato()));
+        }
+        return mapa;
+    }
+
+    static boolean esNoDisponible(String valor) {
         if (valor == null || valor.isBlank()) {
-            throw new IllegalStateException("Valor de tipo de cambio Banxico vacío");
+            return true;
         }
+        return "N/E".equalsIgnoreCase(valor.trim());
+    }
+
+    static BigDecimal parsearValor(String valor) {
         try {
             return new BigDecimal(valor.trim());
         } catch (NumberFormatException e) {
-            throw new IllegalStateException("Valor de tipo de cambio Banxico inválido: " + valor, e);
+            throw new IllegalStateException("Valor FIX Banxico invalido: " + valor, e);
         }
     }
 }

@@ -42,18 +42,6 @@ public class ExchangeRatesClient {
         return response.getValue();
     }
 
-    public boolean existeParaFecha(LocalDate fecha) {
-        return listarTiposCambioUsdMxn().stream()
-                .anyMatch(record -> {
-                    try {
-                        LocalDate startDate = DateUtils.parseDynamicsStartDate(record.getStartDate());
-                        return DateUtils.isSameDate(startDate, fecha);
-                    } catch (IllegalArgumentException e) {
-                        return false;
-                    }
-                });
-    }
-
     public void crearTipoCambio(BigDecimal rate, LocalDate fecha) {
         String accessToken = dynamicsAuthClient.obtenerAccessToken();
         String url = normalizarBaseUrl() + "/data/ExchangeRates";
