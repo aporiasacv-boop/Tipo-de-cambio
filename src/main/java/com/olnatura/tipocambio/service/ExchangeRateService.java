@@ -3,9 +3,8 @@ package com.olnatura.tipocambio.service;
 import com.olnatura.tipocambio.client.BanxicoClient;
 import com.olnatura.tipocambio.client.ExchangeRatesClient;
 import com.olnatura.tipocambio.model.dynamics.ExchangeRateRecord;
-import com.olnatura.tipocambio.util.BusinessDayUtils;
 import com.olnatura.tipocambio.util.DateUtils;
-import com.olnatura.tipocambio.util.FixRateResolver;
+import com.olnatura.tipocambio.util.PagosRateResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,10 +12,10 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
@@ -24,50 +23,67 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ExchangeRateService {
 
-    private static final String SERIE_FIX = "SF43718";
+    private static final String SERIE_PAGOS = BanxicoClient.SERIE_PAGOS;
     private static final ZoneId ZONA_MEXICO = ZoneId.of("America/Mexico_City");
-    private static final int DIAS_ADELANTO_HABILES = 2;
+
+    /** Primera fecha del historial USD/MXN en Dynamics (carga inicial). */
+    static final LocalDate FECHA_INICIO_HISTORIAL = LocalDate.of(2020, 2, 29);
+
+    /** Margen al consultar Banxico hacia el futuro para detectar la ultima fecha publicada en SF60653. */
+    private static final int MARGEN_CONSULTA_BANXICO_ADELANTO = 30;
     private static final int DIAS_RETROCESO_BANXICO = 60;
-    private static final int DIAS_INICIO_SIN_REGISTROS = 30;
 
     private final BanxicoClient banxicoClient;
     private final ExchangeRatesClient exchangeRatesClient;
 
     public void actualizarTipoCambio() {
         LocalDate hoy = LocalDate.now(ZONA_MEXICO);
-        LocalDate fechaFin = BusinessDayUtils.sumarDiasHabiles(hoy, DIAS_ADELANTO_HABILES);
-
         List<ExchangeRateRecord> registros = exchangeRatesClient.listarTiposCambioUsdMxn();
         Set<LocalDate> fechasExistentes = extraerFechas(registros);
-        LocalDate fechaInicio = calcularFechaInicio(fechasExistentes, hoy);
+        boolean cargaHistorialCompleta = fechasExistentes.isEmpty();
 
-        log.info("Hoy (Mexico): {}, rango a cubrir: {} a {}", hoy, fechaInicio, fechaFin);
+        LocalDate banxicoHasta = hoy.plusDays(MARGEN_CONSULTA_BANXICO_ADELANTO);
+        LocalDate banxicoDesde = cargaHistorialCompleta
+                ? FECHA_INICIO_HISTORIAL
+                : fechasExistentes.stream()
+                        .min(LocalDate::compareTo)
+                        .orElse(FECHA_INICIO_HISTORIAL)
+                        .minusDays(DIAS_RETROCESO_BANXICO);
+        if (banxicoDesde.isBefore(FECHA_INICIO_HISTORIAL)) {
+            banxicoDesde = FECHA_INICIO_HISTORIAL;
+        }
 
-        if (fechaInicio.isAfter(fechaFin)) {
-            log.info("Dynamics ya cubre hasta {} (objetivo {}). Sin fechas nuevas.",
-                    fechasExistentes.stream().max(LocalDate::compareTo).orElse(null), fechaFin);
+        Map<LocalDate, BigDecimal> pagosPorFecha =
+                banxicoClient.obtenerMapaPagos(banxicoDesde, banxicoHasta);
+        LocalDate ultimaFechaBanxico = ultimaFechaPublicada(pagosPorFecha);
+        log.info("Para pagos Banxico ({}): {} fechas con valor numerico (consulta {} a {}), ultima publicada: {}",
+                SERIE_PAGOS, pagosPorFecha.size(), banxicoDesde, banxicoHasta, ultimaFechaBanxico);
+
+        if (pagosPorFecha.isEmpty()) {
+            throw new IllegalStateException("Banxico no devolvio datos para la serie " + SERIE_PAGOS);
+        }
+
+        LocalDate fechaFin = ultimaFechaBanxico;
+        LocalDate fechaDesde = calcularFechaDesde(fechasExistentes, fechaFin);
+        List<LocalDate> fechasFaltantes = listarFechasFaltantes(fechasExistentes, fechaDesde, fechaFin);
+
+        log.info("Hoy (Mexico): {}, rango a cubrir: {} a {} (hasta ultima {}), fechas faltantes: {}",
+                hoy, fechaDesde, fechaFin, SERIE_PAGOS, fechasFaltantes.size());
+
+        if (fechasFaltantes.isEmpty()) {
+            log.info("Dynamics ya cubre el rango {} a {}. Sin fechas nuevas.", fechaDesde, fechaFin);
             return;
         }
 
-        LocalDate banxicoDesde = fechaInicio.minusDays(DIAS_RETROCESO_BANXICO);
-        LocalDate banxicoHasta = hoy;
-        Map<LocalDate, BigDecimal> fixPorFecha = banxicoClient.obtenerMapaFix(banxicoDesde, banxicoHasta);
-        log.info("FIX Banxico ({}): {} fechas con valor numerico", SERIE_FIX, fixPorFecha.size());
-
         int creados = 0;
-        int omitidos = 0;
         int errores = 0;
 
-        for (LocalDate fecha = fechaInicio; !fecha.isAfter(fechaFin); fecha = fecha.plusDays(1)) {
-            if (fechasExistentes.contains(fecha)) {
-                log.info("Omitido {}: ya existe en Dynamics", fecha);
-                omitidos++;
-                continue;
-            }
+        for (LocalDate fecha : fechasFaltantes) {
             try {
-                BigDecimal tasa = FixRateResolver.resolverParaFecha(fecha, fixPorFecha);
+                BigDecimal tasa = PagosRateResolver.resolverParaFecha(fecha, pagosPorFecha);
                 exchangeRatesClient.crearTipoCambio(tasa, fecha);
-                log.info("Creado {}: tasa {} (StartDate {})", fecha, tasa, DateUtils.toDynamicsStartDate(fecha));
+                log.info("Creado {}: tasa {} (pagos {}) (StartDate {})",
+                        fecha, tasa, SERIE_PAGOS, DateUtils.toDynamicsStartDate(fecha));
                 creados++;
             } catch (Exception e) {
                 log.error("Error en fecha {}: {}", fecha, e.getMessage(), e);
@@ -75,18 +91,48 @@ public class ExchangeRateService {
             }
         }
 
-        log.info("Resumen: {} creados, {} omitidos, {} errores", creados, omitidos, errores);
+        log.info("Resumen: {} creados, {} errores", creados, errores);
         if (errores > 0) {
             throw new IllegalStateException("Proceso terminado con " + errores + " error(es)");
         }
     }
 
-    private LocalDate calcularFechaInicio(Set<LocalDate> fechasExistentes, LocalDate hoy) {
-        Optional<LocalDate> ultima = fechasExistentes.stream().max(LocalDate::compareTo);
-        if (ultima.isPresent()) {
-            return ultima.get().plusDays(1);
+    /**
+     * Si solo faltan dias al final, empieza en ultimo+1; si hay huecos en medio, revisa desde el minimo.
+     */
+    /**
+     * Carga inicial: desde {@link #FECHA_INICIO_HISTORIAL}.
+     * Operacion diaria: desde ultimo+1 o desde el minimo si hay huecos.
+     */
+    private LocalDate calcularFechaDesde(Set<LocalDate> fechasExistentes, LocalDate fechaFinBanxico) {
+        if (fechasExistentes.isEmpty()) {
+            return FECHA_INICIO_HISTORIAL;
         }
-        return hoy.minusDays(DIAS_INICIO_SIN_REGISTROS);
+        LocalDate ultimo = fechasExistentes.stream().max(LocalDate::compareTo).orElse(FECHA_INICIO_HISTORIAL);
+        LocalDate siguienteAlUltimo = ultimo.plusDays(1);
+        if (!siguienteAlUltimo.isAfter(fechaFinBanxico)) {
+            return siguienteAlUltimo;
+        }
+        return fechasExistentes.stream().min(LocalDate::compareTo).orElse(FECHA_INICIO_HISTORIAL);
+    }
+
+    static LocalDate ultimaFechaPublicada(Map<LocalDate, BigDecimal> pagosPorFecha) {
+        return pagosPorFecha.keySet().stream()
+                .max(LocalDate::compareTo)
+                .orElseThrow(() -> new IllegalStateException("Banxico no devolvio fechas en la serie"));
+    }
+
+    static List<LocalDate> listarFechasFaltantes(Set<LocalDate> fechasExistentes, LocalDate desde, LocalDate hasta) {
+        if (desde.isAfter(hasta)) {
+            return List.of();
+        }
+        List<LocalDate> faltantes = new ArrayList<>();
+        for (LocalDate cursor = desde; !cursor.isAfter(hasta); cursor = cursor.plusDays(1)) {
+            if (!fechasExistentes.contains(cursor)) {
+                faltantes.add(cursor);
+            }
+        }
+        return faltantes;
     }
 
     private Set<LocalDate> extraerFechas(List<ExchangeRateRecord> registros) {

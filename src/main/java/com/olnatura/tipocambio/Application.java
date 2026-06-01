@@ -22,7 +22,7 @@ public class Application {
     @Bean
     CommandLineRunner runProcess() {
         return args -> {
-            log.info("Inicio del proceso de actualización de tipo de cambio USD -> MXN");
+            log.info("Inicio: insercion de tipos de cambio USD -> MXN (Banxico para pagos SF60653)");
             try {
                 exchangeRateService.actualizarTipoCambio();
             } catch (Exception e) {

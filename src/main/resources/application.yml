@@ -10,7 +10,7 @@ dynamics:
   tenant-id: ${DYNAMICS_TENANT_ID}
   client-id: ${DYNAMICS_CLIENT_ID}
   client-secret: ${DYNAMICS_CLIENT_SECRET}
-  scope: https://olnatura-produccion.operations.dynamics.com/.default
+  scope: ${DYNAMICS_SCOPE:https://olnatura-produccion.operations.dynamics.com/.default}
 
 logging:
   level:

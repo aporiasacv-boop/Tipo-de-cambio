@@ -1,10 +1,9 @@
 @echo off
 cd /d "%~dp0"
 
-echo Manual: en esta ventana CMD define BANXICO_TOKEN, DYNAMICS_BASE_URL,
-echo DYNAMICS_TENANT_ID, DYNAMICS_CLIENT_ID y DYNAMICS_CLIENT_SECRET.
-echo Ejemplo: set BANXICO_TOKEN=...
-echo Luego ejecuta: ejecutar.cmd
+echo Solo INSERTA tipos de cambio USD/MXN (Banxico SF60653). No borra registros.
+echo Define BANXICO_TOKEN, DYNAMICS_BASE_URL, DYNAMICS_TENANT_ID,
+echo DYNAMICS_CLIENT_ID y DYNAMICS_CLIENT_SECRET, luego: ejecutar.cmd
 echo.
 
 if "%BANXICO_TOKEN%"=="" (

@@ -1,13 +1,13 @@
 package com.olnatura.tipocambio.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.olnatura.tipocambio.model.dynamics.ExchangeRateRecord;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ExchangeRatesClientTest {
@@ -19,7 +19,7 @@ class ExchangeRatesClientTest {
         BigDecimal rate = new BigDecimal("17.2720");
         LocalDate fecha = LocalDate.of(2026, 5, 27);
 
-        ExchangeRateRecord payload = ExchangeRatesClient.buildExchangeRatePayload(rate, fecha);
+        var payload = ExchangeRatesClient.buildExchangeRateCreateRequest(rate, fecha);
 
         String json = objectMapper.writeValueAsString(payload);
 
@@ -31,5 +31,6 @@ class ExchangeRatesClientTest {
         assertEquals("One", payload.getConversionFactor());
         assertTrue(json.contains("\"FromCurrency\":\"USD\""));
         assertTrue(json.contains("\"StartDate\":\"2026-05-27T12:00:00Z\""));
+        assertFalse(json.contains("odata.etag"), "POST no debe enviar @odata.etag");
     }
 }

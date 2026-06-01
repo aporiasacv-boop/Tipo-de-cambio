@@ -1,12 +1,13 @@
 package com.olnatura.tipocambio.model.dynamics;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+/**
+ * Cuerpo de POST a ExchangeRates. Sin metadatos OData (@odata.etag).
+ */
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class ExchangeRateRecord {
+public class ExchangeRateCreateRequest {
 
     @JsonProperty("RateTypeName")
     private String rateTypeName;
@@ -25,7 +26,4 @@ public class ExchangeRateRecord {
 
     @JsonProperty("ConversionFactor")
     private String conversionFactor;
-
-    @JsonProperty("@odata.etag")
-    private String oDataEtag;
 }

@@ -1,6 +1,7 @@
 package com.olnatura.tipocambio.client;
 
 import com.olnatura.tipocambio.config.DynamicsProperties;
+import com.olnatura.tipocambio.model.dynamics.ExchangeRateCreateRequest;
 import com.olnatura.tipocambio.model.dynamics.ExchangeRateRecord;
 import com.olnatura.tipocambio.model.dynamics.ExchangeRatesODataResponse;
 import com.olnatura.tipocambio.util.DateUtils;
@@ -46,7 +47,7 @@ public class ExchangeRatesClient {
         String accessToken = dynamicsAuthClient.obtenerAccessToken();
         String url = normalizarBaseUrl() + "/data/ExchangeRates";
 
-        ExchangeRateRecord payload = buildExchangeRatePayload(rate, fecha);
+        ExchangeRateCreateRequest payload = buildExchangeRateCreateRequest(rate, fecha);
 
         restClient.post()
                 .uri(url)
@@ -57,15 +58,15 @@ public class ExchangeRatesClient {
                 .toBodilessEntity();
     }
 
-    static ExchangeRateRecord buildExchangeRatePayload(BigDecimal rate, LocalDate fecha) {
-        ExchangeRateRecord record = new ExchangeRateRecord();
-        record.setRateTypeName("Predeterminado");
-        record.setFromCurrency("USD");
-        record.setToCurrency("MXN");
-        record.setStartDate(DateUtils.toDynamicsStartDate(fecha));
-        record.setRate(rate);
-        record.setConversionFactor("One");
-        return record;
+    static ExchangeRateCreateRequest buildExchangeRateCreateRequest(BigDecimal rate, LocalDate fecha) {
+        ExchangeRateCreateRequest request = new ExchangeRateCreateRequest();
+        request.setRateTypeName("Predeterminado");
+        request.setFromCurrency("USD");
+        request.setToCurrency("MXN");
+        request.setStartDate(DateUtils.toDynamicsStartDate(fecha));
+        request.setRate(rate);
+        request.setConversionFactor("One");
+        return request;
     }
 
     private String normalizarBaseUrl() {
