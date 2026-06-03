@@ -9,9 +9,6 @@ public final class BanxicoSeriesUtils {
     private BanxicoSeriesUtils() {
     }
 
-    /**
-     * Valor de la serie en {@code fechaObjetivo}, o el último día con dato numérico hacia atrás.
-     */
     public static BigDecimal ultimoValorValido(
             LocalDate fechaObjetivo,
             Map<LocalDate, BigDecimal> valoresPorFecha,
@@ -26,7 +23,7 @@ public final class BanxicoSeriesUtils {
             }
             cursor = cursor.minusDays(1);
         }
-        throw new IllegalStateException("No hay valor valido de " + nombreSerie + " en los ultimos "
-                + maxRetrocesoDias + " dias desde " + fechaObjetivo);
+        throw new IllegalStateException("Sin valor " + nombreSerie + " en " + maxRetrocesoDias
+                + " dias desde " + fechaObjetivo);
     }
 }

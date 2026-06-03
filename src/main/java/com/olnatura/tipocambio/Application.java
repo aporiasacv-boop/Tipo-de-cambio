@@ -22,14 +22,9 @@ public class Application {
     @Bean
     CommandLineRunner runProcess() {
         return args -> {
-            log.info("Inicio: insercion de tipos de cambio USD -> MXN (Banxico para pagos SF60653)");
-            try {
-                exchangeRateService.actualizarTipoCambio();
-            } catch (Exception e) {
-                log.error("Error durante el proceso: {}", e.getMessage(), e);
-                throw e;
-            }
-            log.info("Proceso finalizado");
+            log.info("Inicio actualizacion USD/MXN SF60653");
+            exchangeRateService.actualizarTipoCambio();
+            log.info("Fin");
         };
     }
 }

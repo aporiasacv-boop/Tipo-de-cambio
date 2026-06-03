@@ -12,4 +12,7 @@ public class ExchangeRatesODataResponse {
 
     @JsonProperty("value")
     private List<ExchangeRateRecord> value;
+
+    @JsonProperty("@odata.nextLink")
+    private String nextLink;
 }

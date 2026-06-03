@@ -9,38 +9,64 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
 public class ExchangeRatesClient {
 
-    private static final String FILTER =
-            "/data/ExchangeRates?$filter=FromCurrency eq 'USD' and ToCurrency eq 'MXN'";
-
     private final RestClient restClient;
     private final DynamicsProperties dynamicsProperties;
     private final DynamicsAuthClient dynamicsAuthClient;
 
-    public List<ExchangeRateRecord> listarTiposCambioUsdMxn() {
+    public Set<LocalDate> listarFechasUsdMxnDesde(LocalDate desde) {
         String accessToken = dynamicsAuthClient.obtenerAccessToken();
-        String url = normalizarBaseUrl() + FILTER;
+        Set<LocalDate> fechas = new HashSet<>();
+        URI uri = uriListarDesde(desde);
 
-        ExchangeRatesODataResponse response = restClient.get()
-                .uri(url)
-                .header("Authorization", "Bearer " + accessToken)
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .body(ExchangeRatesODataResponse.class);
+        while (uri != null) {
+            ExchangeRatesODataResponse response = restClient.get()
+                    .uri(uri)
+                    .header("Authorization", "Bearer " + accessToken)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    .body(ExchangeRatesODataResponse.class);
 
-        if (response == null || response.getValue() == null) {
-            return Collections.emptyList();
+            if (response == null || response.getValue() == null) {
+                break;
+            }
+            for (ExchangeRateRecord registro : response.getValue()) {
+                try {
+                    fechas.add(DateUtils.parseDynamicsStartDate(registro.getStartDate()));
+                } catch (IllegalArgumentException ignored) {
+                }
+            }
+            String nextLink = response.getNextLink();
+            uri = nextLink == null || nextLink.isBlank() ? null : URI.create(nextLink);
         }
-        return response.getValue();
+        return fechas;
+    }
+
+    static URI uriListarDesde(String baseUrl, LocalDate desde) {
+        String filtro = String.format(
+                "FromCurrency eq 'USD' and ToCurrency eq 'MXN' and StartDate ge %s",
+                DateUtils.toDynamicsStartDate(desde));
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path("/data/ExchangeRates")
+                .queryParam("$filter", filtro)
+                .encode()
+                .build()
+                .toUri();
+    }
+
+    private URI uriListarDesde(LocalDate desde) {
+        return uriListarDesde(normalizarBaseUrl(), desde);
     }
 
     public void crearTipoCambio(BigDecimal rate, LocalDate fecha) {
@@ -50,7 +76,7 @@ public class ExchangeRatesClient {
         ExchangeRateCreateRequest payload = buildExchangeRateCreateRequest(rate, fecha);
 
         restClient.post()
-                .uri(url)
+                .uri(URI.create(url))
                 .header("Authorization", "Bearer " + accessToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(payload)

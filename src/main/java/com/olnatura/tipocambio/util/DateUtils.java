@@ -52,8 +52,4 @@ public final class DateUtils {
     public static String toDynamicsStartDate(LocalDate date) {
         return date.atTime(12, 0).atOffset(ZoneOffset.UTC).format(DYNAMICS_START_DATE);
     }
-
-    public static boolean isSameDate(LocalDate a, LocalDate b) {
-        return a != null && a.equals(b);
-    }
 }

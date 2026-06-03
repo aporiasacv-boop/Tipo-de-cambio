@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DateUtilsTest {
 
@@ -19,6 +18,6 @@ class DateUtilsTest {
     void comparaSoloFechaDynamics() {
         LocalDate hoy = LocalDate.of(2026, 5, 27);
         LocalDate desdeDynamics = DateUtils.parseDynamicsStartDate("2026-05-27T12:00:00Z");
-        assertTrue(DateUtils.isSameDate(hoy, desdeDynamics));
+        assertEquals(hoy, desdeDynamics);
     }
 }

@@ -1,4 +1,5 @@
 target/
+logs/
 maven-wrapper-tmp/
 maven-wrapper.zip
 .idea/
@@ -8,3 +9,5 @@ maven-wrapper.zip
 .settings/
 *.log
 .env
+configurar-variables.cmd
+servidor/

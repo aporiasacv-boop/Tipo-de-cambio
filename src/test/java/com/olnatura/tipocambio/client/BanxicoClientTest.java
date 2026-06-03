@@ -18,7 +18,7 @@ class BanxicoClientTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
-    void parseaMapaFixIgnorandoNe() throws Exception {
+    void parseaMapaSerieIgnorandoNe() throws Exception {
         String json = """
                 {
                   "bmx": {
@@ -36,7 +36,7 @@ class BanxicoClientTest {
                 """;
 
         BanxicoResponse response = objectMapper.readValue(json, BanxicoResponse.class);
-        Map<LocalDate, BigDecimal> mapa = BanxicoClient.parsearMapaFix(response);
+        Map<LocalDate, BigDecimal> mapa = BanxicoClient.parsearMapaSerie(response);
 
         assertEquals(2, mapa.size());
         assertEquals(new BigDecimal("17.3232"), mapa.get(LocalDate.of(2026, 5, 26)));
@@ -57,6 +57,6 @@ class BanxicoClientTest {
         BanxicoResponse.Bmx bmx = new BanxicoResponse.Bmx();
         response.setBmx(bmx);
 
-        assertThrows(IllegalStateException.class, () -> BanxicoClient.parsearMapaFix(response));
+        assertThrows(IllegalStateException.class, () -> BanxicoClient.parsearMapaSerie(response));
     }
 }

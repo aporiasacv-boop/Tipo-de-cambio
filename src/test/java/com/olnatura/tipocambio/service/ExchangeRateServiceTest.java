@@ -14,34 +14,35 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ExchangeRateServiceTest {
 
     @Test
-    void inicioHistorialUsdMxnEs29Feb2020() {
-        assertEquals(LocalDate.of(2020, 2, 29), ExchangeRateService.FECHA_INICIO_HISTORIAL);
+    void retrocesoOperacionSon14Dias() {
+        assertEquals(14, ExchangeRateService.DIAS_RETROCESO_OPERACION);
     }
 
     @Test
-    void detectaHuecosConRegistrosPosteriores() {
-        Set<LocalDate> existentes = Set.of(
-                LocalDate.of(2026, 5, 26),
-                LocalDate.of(2026, 5, 27),
-                LocalDate.of(2026, 5, 28),
-                LocalDate.of(2026, 5, 29),
-                LocalDate.of(2026, 6, 1),
-                LocalDate.of(2026, 6, 2));
-
-        List<LocalDate> faltantes = ExchangeRateService.listarFechasFaltantes(
-                existentes,
-                LocalDate.of(2026, 5, 26),
-                LocalDate.of(2026, 6, 2));
-
-        assertEquals(
-                List.of(
-                        LocalDate.of(2026, 5, 30),
-                        LocalDate.of(2026, 5, 31)),
-                faltantes);
+    void fechaDesdeSinRegistrosRetrocede14Dias() {
+        LocalDate hoy = LocalDate.of(2026, 6, 5);
+        LocalDate desde = ExchangeRateService.calcularFechaDesde(hoy, Set.of(), LocalDate.of(2026, 6, 10));
+        assertEquals(LocalDate.of(2026, 5, 22), desde);
     }
 
     @Test
-    void detectaHuecosHastaRegistroPosterior() {
+    void fechaDesdeContinuaDesdeUltimoRegistro() {
+        LocalDate hoy = LocalDate.of(2026, 6, 5);
+        Set<LocalDate> existentes = Set.of(LocalDate.of(2026, 6, 1));
+        LocalDate desde = ExchangeRateService.calcularFechaDesde(hoy, existentes, LocalDate.of(2026, 6, 10));
+        assertEquals(LocalDate.of(2026, 6, 2), desde);
+    }
+
+    @Test
+    void fechaDesdeNoRetrocedeMasDe14Dias() {
+        LocalDate hoy = LocalDate.of(2026, 6, 5);
+        Set<LocalDate> existentes = Set.of(LocalDate.of(2026, 5, 1));
+        LocalDate desde = ExchangeRateService.calcularFechaDesde(hoy, existentes, LocalDate.of(2026, 6, 10));
+        assertEquals(LocalDate.of(2026, 5, 22), desde);
+    }
+
+    @Test
+    void listarFechasFaltantesDetectaHuecos() {
         Set<LocalDate> existentes = Set.of(
                 LocalDate.of(2026, 5, 29),
                 LocalDate.of(2026, 6, 1),

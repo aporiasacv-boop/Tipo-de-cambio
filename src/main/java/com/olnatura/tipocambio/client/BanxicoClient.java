@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+import java.net.URI;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -63,7 +64,7 @@ public class BanxicoClient {
                 hasta.format(BANXICO_PATH_DATE));
 
         BanxicoResponse response = restClient.get()
-                .uri(url)
+                .uri(URI.create(url))
                 .header("Bmx-Token", banxicoProperties.getToken())
                 .header("Accept", "application/json")
                 .retrieve()
@@ -94,12 +95,6 @@ public class BanxicoClient {
             mapa.put(fecha, parsearValor(dato.getDato()));
         }
         return mapa;
-    }
-
-    /** @deprecated usar {@link #parsearMapaSerie} */
-    @Deprecated
-    static Map<LocalDate, BigDecimal> parsearMapaFix(BanxicoResponse response) {
-        return parsearMapaSerie(response);
     }
 
     static boolean esNoDisponible(String valor) {

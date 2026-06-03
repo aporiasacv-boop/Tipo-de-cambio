@@ -9,6 +9,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
+import java.net.URI;
+
 @Component
 @RequiredArgsConstructor
 public class DynamicsAuthClient {
@@ -28,7 +30,7 @@ public class DynamicsAuthClient {
         body.add("grant_type", "client_credentials");
 
         DynamicsTokenResponse response = restClient.post()
-                .uri(tokenUrl)
+                .uri(URI.create(tokenUrl))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(body)
                 .retrieve()

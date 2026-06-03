@@ -3,9 +3,6 @@ package com.olnatura.tipocambio.model.dynamics;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-/**
- * Cuerpo de POST a ExchangeRates. Sin metadatos OData (@odata.etag).
- */
 @Data
 public class ExchangeRateCreateRequest {
 
