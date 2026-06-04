@@ -1,0 +1,9 @@
+# Copiar a application-local.yml (esta copia no se sube a GitHub).
+# Spring Boot carga application-local.yml automaticamente si existe.
+banxico:
+  token: PEGAR_TOKEN_BANXICO
+
+dynamics:
+  tenant-id: PEGAR_TENANT_ID
+  client-id: PEGAR_CLIENT_ID
+  client-secret: PEGAR_CLIENT_SECRET

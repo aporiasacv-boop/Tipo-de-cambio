@@ -6,7 +6,7 @@ banxico:
   token: ${BANXICO_TOKEN}
 
 dynamics:
-  base-url: ${DYNAMICS_BASE_URL}
+  base-url: ${DYNAMICS_BASE_URL:https://olnatura-produccion.operations.dynamics.com}
   tenant-id: ${DYNAMICS_TENANT_ID}
   client-id: ${DYNAMICS_CLIENT_ID}
   client-secret: ${DYNAMICS_CLIENT_SECRET}

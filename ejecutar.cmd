@@ -1,37 +1,28 @@
 @echo off
 cd /d "%~dp0"
 
-if exist configurar-variables.cmd call configurar-variables.cmd
+set JAR=
+if exist "actualizar-tipo-cambio.jar" set JAR=actualizar-tipo-cambio.jar
+if "%JAR%"=="" if exist "target\actualizar-tipo-cambio.jar" set JAR=target\actualizar-tipo-cambio.jar
 
-if "%BANXICO_TOKEN%"=="" (
-  echo Falta BANXICO_TOKEN
-  exit /b 1
-)
-if "%DYNAMICS_BASE_URL%"=="" (
-  echo Falta DYNAMICS_BASE_URL
-  exit /b 1
-)
-if "%DYNAMICS_TENANT_ID%"=="" (
-  echo Falta DYNAMICS_TENANT_ID
-  exit /b 1
-)
-if "%DYNAMICS_CLIENT_ID%"=="" (
-  echo Falta DYNAMICS_CLIENT_ID
-  exit /b 1
-)
-if "%DYNAMICS_CLIENT_SECRET%"=="" (
-  echo Falta DYNAMICS_CLIENT_SECRET
-  exit /b 1
+if "%JAR%"=="" (
+  echo Compilando JAR...
+  call mvnw.cmd -q package -DskipTests
+  if errorlevel 1 exit /b 1
+  set JAR=target\actualizar-tipo-cambio.jar
 )
 
-if exist "actualizar-tipo-cambio.jar" (
-  java -jar "actualizar-tipo-cambio.jar"
-  exit /b %ERRORLEVEL%
-)
-if exist "target\actualizar-tipo-cambio.jar" (
-  java -jar "target\actualizar-tipo-cambio.jar"
-  exit /b %ERRORLEVEL%
-)
+if not exist "logs" mkdir logs
+for /f %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMdd"') do set FECHA=%%i
+set LOG=logs\tipo-cambio-%FECHA%.log
 
-call mvnw.cmd -q spring-boot:run
-exit /b %ERRORLEVEL%
+set JAVA_CMD=java
+if defined JAVA_HOME if exist "%JAVA_HOME%\bin\java.exe" set JAVA_CMD=%JAVA_HOME%\bin\java.exe
+
+echo Ejecutando %JAR% ...
+echo [%date% %time%] Inicio >> "%LOG%"
+"%JAVA_CMD%" -jar "%JAR%" >> "%LOG%" 2>&1
+set EXIT_CODE=%ERRORLEVEL%
+echo [%date% %time%] Fin codigo %EXIT_CODE% >> "%LOG%"
+echo Terminado codigo %EXIT_CODE%. Log: %LOG%
+exit /b %EXIT_CODE%

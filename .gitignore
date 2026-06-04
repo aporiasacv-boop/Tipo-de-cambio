@@ -9,5 +9,5 @@ maven-wrapper.zip
 .settings/
 *.log
 .env
-configurar-variables.cmd
+application-local.yml
 servidor/

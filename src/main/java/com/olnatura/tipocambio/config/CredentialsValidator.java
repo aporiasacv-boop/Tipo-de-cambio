@@ -29,7 +29,7 @@ public class CredentialsValidator {
         }
         if (valor.startsWith("${")) {
             throw new IllegalStateException(
-                    "Variable no definida: " + nombre + ". Configurala en Windows o en configurar-variables.cmd");
+                    "Credencial sin valor: " + nombre + ". Revisa application.yml o variables de entorno.");
         }
     }
 }
