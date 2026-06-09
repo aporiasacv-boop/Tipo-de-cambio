@@ -1,6 +1,7 @@
 package com.olnatura.tipocambio.client;
 
 import com.olnatura.tipocambio.config.DynamicsProperties;
+import com.olnatura.tipocambio.model.ParDivisa;
 import com.olnatura.tipocambio.model.dynamics.ExchangeRateCreateRequest;
 import com.olnatura.tipocambio.model.dynamics.ExchangeRateRecord;
 import com.olnatura.tipocambio.model.dynamics.ExchangeRatesODataResponse;
@@ -25,10 +26,10 @@ public class ExchangeRatesClient {
     private final DynamicsProperties dynamicsProperties;
     private final DynamicsAuthClient dynamicsAuthClient;
 
-    public Set<LocalDate> listarFechasUsdMxnDesde(LocalDate desde) {
+    public Set<LocalDate> listarFechasDesde(ParDivisa par, LocalDate desde) {
         String accessToken = dynamicsAuthClient.obtenerAccessToken();
         Set<LocalDate> fechas = new HashSet<>();
-        URI uri = uriListarDesde(desde);
+        URI uri = uriListarDesde(normalizarBaseUrl(), par, desde);
 
         while (uri != null) {
             ExchangeRatesODataResponse response = restClient.get()
@@ -53,9 +54,15 @@ public class ExchangeRatesClient {
         return fechas;
     }
 
-    static URI uriListarDesde(String baseUrl, LocalDate desde) {
+    public Set<LocalDate> listarFechasUsdMxnDesde(LocalDate desde) {
+        return listarFechasDesde(ParDivisa.USD_MXN, desde);
+    }
+
+    static URI uriListarDesde(String baseUrl, ParDivisa par, LocalDate desde) {
         String filtro = String.format(
-                "FromCurrency eq 'USD' and ToCurrency eq 'MXN' and StartDate ge %s",
+                "FromCurrency eq '%s' and ToCurrency eq '%s' and StartDate ge %s",
+                par.fromCurrency(),
+                par.toCurrency(),
                 DateUtils.toDynamicsStartDate(desde));
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path("/data/ExchangeRates")
@@ -65,15 +72,11 @@ public class ExchangeRatesClient {
                 .toUri();
     }
 
-    private URI uriListarDesde(LocalDate desde) {
-        return uriListarDesde(normalizarBaseUrl(), desde);
-    }
-
-    public void crearTipoCambio(BigDecimal rate, LocalDate fecha) {
+    public void crearTipoCambio(ParDivisa par, BigDecimal rate, LocalDate fecha) {
         String accessToken = dynamicsAuthClient.obtenerAccessToken();
         String url = normalizarBaseUrl() + "/data/ExchangeRates";
 
-        ExchangeRateCreateRequest payload = buildExchangeRateCreateRequest(rate, fecha);
+        ExchangeRateCreateRequest payload = buildExchangeRateCreateRequest(par, rate, fecha);
 
         restClient.post()
                 .uri(URI.create(url))
@@ -84,15 +87,24 @@ public class ExchangeRatesClient {
                 .toBodilessEntity();
     }
 
-    static ExchangeRateCreateRequest buildExchangeRateCreateRequest(BigDecimal rate, LocalDate fecha) {
+    public void crearTipoCambio(BigDecimal rate, LocalDate fecha) {
+        crearTipoCambio(ParDivisa.USD_MXN, rate, fecha);
+    }
+
+    static ExchangeRateCreateRequest buildExchangeRateCreateRequest(
+            ParDivisa par, BigDecimal rate, LocalDate fecha) {
         ExchangeRateCreateRequest request = new ExchangeRateCreateRequest();
         request.setRateTypeName("Predeterminado");
-        request.setFromCurrency("USD");
-        request.setToCurrency("MXN");
+        request.setFromCurrency(par.fromCurrency());
+        request.setToCurrency(par.toCurrency());
         request.setStartDate(DateUtils.toDynamicsStartDate(fecha));
         request.setRate(rate);
         request.setConversionFactor("One");
         return request;
+    }
+
+    static ExchangeRateCreateRequest buildExchangeRateCreateRequest(BigDecimal rate, LocalDate fecha) {
+        return buildExchangeRateCreateRequest(ParDivisa.USD_MXN, rate, fecha);
     }
 
     private String normalizarBaseUrl() {

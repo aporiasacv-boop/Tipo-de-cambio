@@ -15,7 +15,7 @@
     <artifactId>actualizar-tipo-cambio</artifactId>
     <version>1.0.0</version>
     <name>actualizar-tipo-cambio</name>
-    <description>Actualiza tipo de cambio USD/MXN en Dynamics desde Banxico para pagos (SF60653)</description>
+    <description>Actualiza USD/MXN y EUR/MXN en Dynamics desde Banxico (SF60653, SF46410)</description>
 
     <properties>
         <java.version>21</java.version>

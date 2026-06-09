@@ -25,6 +25,7 @@ import java.util.TreeMap;
 public class BanxicoClient {
 
     public static final String SERIE_PAGOS = "SF60653";
+    public static final String SERIE_EURO = "SF46410";
 
     private static final int DIAS_MAX_UNA_CONSULTA = 400;
 
@@ -35,6 +36,10 @@ public class BanxicoClient {
 
     public Map<LocalDate, BigDecimal> obtenerMapaPagos(LocalDate desde, LocalDate hasta) {
         return obtenerMapaSerie(SERIE_PAGOS, desde, hasta);
+    }
+
+    public Map<LocalDate, BigDecimal> obtenerMapaEuro(LocalDate desde, LocalDate hasta) {
+        return obtenerMapaSerie(SERIE_EURO, desde, hasta);
     }
 
     public Map<LocalDate, BigDecimal> obtenerMapaSerie(String serieId, LocalDate desde, LocalDate hasta) {

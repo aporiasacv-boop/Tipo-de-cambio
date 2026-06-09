@@ -10,4 +10,5 @@ maven-wrapper.zip
 *.log
 .env
 application-local.yml
+actualizar-tipo-cambio.jar
 servidor/
