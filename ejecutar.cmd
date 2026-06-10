@@ -1,5 +1,5 @@
 @echo off
-setlocal EnableExtensions
+setlocal EnableExtensions EnableDelayedExpansion
 cd /d "%~dp0"
 
 set LOG=
@@ -16,7 +16,8 @@ if errorlevel 1 exit /b %DIAG_CODE%
 call :validar_jar
 if errorlevel 1 exit /b %DIAG_CODE%
 
-echo [%date% %time%] Inicio carpeta=%CD% jar=%JAR% java=%JAVA_CMD% >> "%LOG%"
+call :marca >> "%LOG%" 2>&1
+echo Inicio carpeta=!CD! jar=!JAR! java=!JAVA_CMD! >> "%LOG%"
 echo Ejecutando %JAR% ...
 "%JAVA_CMD%" -version >> "%LOG%" 2>&1
 if errorlevel 1 (
@@ -27,7 +28,8 @@ if errorlevel 1 (
 "%JAVA_CMD%" -jar "%JAR%" >> "%LOG%" 2>&1
 set EXIT_CODE=%ERRORLEVEL%
 call :interpretar_salida %EXIT_CODE%
-echo [%date% %time%] Fin codigo %EXIT_CODE% >> "%LOG%"
+call :marca >> "%LOG%" 2>&1
+echo Fin codigo !EXIT_CODE! >> "%LOG%"
 echo Terminado codigo %EXIT_CODE%. Log: %LOG%
 exit /b %EXIT_CODE%
 
@@ -74,9 +76,14 @@ if "%JAVA_CMD%"=="" (
 exit /b 0
 
 :validar_jar
+set JAR_SIZE=
 for %%F in ("%JAR%") do set JAR_SIZE=%%~zF
-if %JAR_SIZE% LSS 5000000 (
-  call :diag 3 "JAR muy pequeno o corrupto (%JAR_SIZE% bytes) - vuelve a copiar el archivo"
+if not defined JAR_SIZE (
+  call :diag 3 "No se pudo leer el tamano del JAR"
+  exit /b 3
+)
+if !JAR_SIZE! LSS 5000000 (
+  call :diag 3 "JAR muy pequeno o corrupto (!JAR_SIZE! bytes) - vuelve a copiar el archivo"
   exit /b 3
 )
 exit /b 0
@@ -110,15 +117,21 @@ if "%EXIT_CODE%"=="99" (
 call :diag 6 "El JAR termino con codigo %EXIT_CODE% - busca CODIGO_SALIDA en el log"
 exit /b %EXIT_CODE%
 
+:marca
+for /f "usebackq delims=" %%t in (`powershell -NoProfile -Command "Get-Date -Format 'yyyy-MM-dd HH:mm:ss'"`) do echo [%%t]
+exit /b 0
+
 :diag
 set DIAG_CODE=%~1
 set DIAG_MSG=%~2
-echo [%date% %time%] [DIAG] ERROR %DIAG_CODE%: %DIAG_MSG% >> "%LOG%"
-echo [DIAG] ERROR %DIAG_CODE%: %DIAG_MSG%
+call :marca >> "%LOG%" 2>&1
+echo [DIAG] ERROR !DIAG_CODE!: !DIAG_MSG! >> "%LOG%"
+echo [DIAG] ERROR !DIAG_CODE!: !DIAG_MSG!
 exit /b 0
 
 :diag_ok
 set DIAG_CODE=%~1
 set DIAG_MSG=%~2
-echo [%date% %time%] [DIAG] OK %DIAG_CODE%: %DIAG_MSG% >> "%LOG%"
+call :marca >> "%LOG%" 2>&1
+echo [DIAG] OK !DIAG_CODE!: !DIAG_MSG! >> "%LOG%"
 exit /b 0

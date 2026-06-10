@@ -1,5 +1,5 @@
 @echo off
-setlocal EnableExtensions
+setlocal EnableExtensions EnableDelayedExpansion
 cd /d "%~dp0"
 
 echo.
@@ -14,25 +14,25 @@ echo.
 set ULTIMA_EJECUCION=
 
 :loop
-for /f "usebackq delims=" %%i in (`powershell -NoProfile -Command ^
-  "$z = [TimeZoneInfo]::FindSystemTimeZoneById('Central Standard Time (Mexico)'); ^
-   $n = [TimeZoneInfo]::ConvertTimeFromUtc((Get-Date).ToUniversalTime(), $z); ^
-   Write-Output ($n.ToString('yyyy-MM-dd') + ' ' + $n.ToString('HH:mm'))"`) do set AHORA=%%i
+set AHORA=
+for /f "usebackq delims=" %%i in (`powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0hora-mexico.ps1"`) do set AHORA=%%i
 
-for /f "tokens=1,2 delims= " %%a in ("%AHORA%") do (
+set FECHA_HOY=
+set HORA_MX=
+for /f "tokens=1,2 delims= " %%a in ("!AHORA!") do (
   set FECHA_HOY=%%a
   set HORA_MX=%%b
 )
 
-if "%HORA_MX%"=="12:01" (
-  if not "%ULTIMA_EJECUCION%"=="%FECHA_HOY%" (
-    echo [%date% %time%] Hora Mexico %AHORA% - iniciando actualizacion...
-    call ejecutar.cmd
-    set ULTIMA_EJECUCION=%FECHA_HOY%
-    echo [%date% %time%] Esperando al siguiente dia...
-    timeout /t 90 /nobreak >nul
-  )
-)
+if not "!HORA_MX!"=="12:01" goto esperar
+if "!ULTIMA_EJECUCION!"=="!FECHA_HOY!" goto esperar
 
+echo !AHORA! - iniciando actualizacion...
+call ejecutar.cmd
+set ULTIMA_EJECUCION=!FECHA_HOY!
+echo Esperando al siguiente dia...
+timeout /t 90 /nobreak >nul
+
+:esperar
 timeout /t 20 /nobreak >nul
 goto loop
