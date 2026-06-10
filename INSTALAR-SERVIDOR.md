@@ -1,6 +1,6 @@
 # Servidor 24/7 — Tipo de cambio
 
-Actualiza USD/MXN y EUR/MXN en Dynamics **cada día a las 12:01** (hora Ciudad de México).  
+Actualiza USD/MXN y EUR/MXN en Dynamics **cada día a las 13:01** (hora Ciudad de México). El euro en Banxico suele publicarse cerca de la 1 pm.  
 **Solo inserta fechas que Banxico publicó en su API.** Si un día no está en la API, no se sube.
 
 ## Requisitos en la PC servidor
@@ -37,10 +37,10 @@ Completa `banxico.token` y los valores de `dynamics.*`.
 
 ```bat
 cd C:\Olnatura\TipoCambio
-vigilar-1201.cmd
+vigilar-1301.cmd
 ```
 
-Deja esa ventana abierta. A las **12:01** ejecuta `ejecutar.cmd` una vez por día.  
+Deja esa ventana abierta. A las **13:01** ejecuta `ejecutar.cmd` una vez por día.  
 Logs: `logs\tipo-cambio-AAAAMMDD.log`
 
 ## Alternativa: tarea de Windows (sin terminal abierta)
@@ -49,7 +49,7 @@ CMD **como administrador**:
 
 ```bat
 cd C:\Olnatura\TipoCambio
-programar-1201.cmd
+programar-1301.cmd
 ```
 
 ## Prueba manual
@@ -70,7 +70,7 @@ code C:\Olnatura\TipoCambio
 ## Configuración recomendada de Windows
 
 - **Energía:** nunca suspender / apagar pantalla
-- **Inicio automático (opcional):** acceso directo a `vigilar-1201.cmd` en la carpeta Inicio del usuario
+- **Inicio automático (opcional):** acceso directo a `3-Vigilar-24-7.cmd` en la carpeta Inicio del usuario
 
 ## Qué hace el programa
 

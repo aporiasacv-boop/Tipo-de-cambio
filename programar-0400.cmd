@@ -1,6 +1,6 @@
 @echo off
 echo.
-echo OBSOLETO: usa programar-1201.cmd (tarea 12:01) o vigilar-1201.cmd (terminal 24/7).
+echo OBSOLETO: usa programar-1301.cmd (tarea 13:01) o vigilar-1301.cmd (terminal 24/7).
 echo.
-call "%~dp0programar-1201.cmd"
+call "%~dp0programar-1301.cmd"
 exit /b %ERRORLEVEL%

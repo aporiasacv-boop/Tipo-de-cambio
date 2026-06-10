@@ -71,9 +71,9 @@ echo Prueba manual:
 echo   ejecutar.cmd
 echo.
 echo Para dejarlo corriendo 24/7 (recomendado por direccion):
-echo   vigilar-1201.cmd
+echo   vigilar-1301.cmd
 echo.
-echo Alternativa con tarea de Windows a las 12:01:
-echo   programar-1201.cmd   (como administrador)
+echo Alternativa con tarea de Windows a las 13:01:
+echo   programar-1301.cmd   (como administrador)
 echo.
 exit /b 0

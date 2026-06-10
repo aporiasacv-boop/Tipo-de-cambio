@@ -13,7 +13,7 @@ echo  Carpeta: %CD%
 echo.
 echo   [1] Instalar y compilar  ^(primera vez^)
 echo   [2] Ejecutar ahora       ^(una vez^)
-echo   [3] Vigilar 24/7         ^(12:01 diario^)
+echo   [3] Vigilar 24/7         ^(13:01 diario^)
 echo   [4] Ver log de hoy
 echo   [5] Crear botones en Escritorio
 echo   [0] Salir
