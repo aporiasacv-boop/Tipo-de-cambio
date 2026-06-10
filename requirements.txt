@@ -16,5 +16,9 @@ Microsoft.VisualStudioCode
 # cd C:\Olnatura\TipoCambio
 # copy src\main\resources\application-local.yml.example src\main\resources\application-local.yml
 # notepad src\main\resources\application-local.yml
-# instalar-servidor.cmd
-# vigilar-1201.cmd
+# Doble clic (botones):
+# INICIO.cmd
+# 1-Instalar.cmd
+# 2-Ejecutar-ahora.cmd
+# 3-Vigilar-24-7.cmd
+# 5-Crear-botones-escritorio.cmd

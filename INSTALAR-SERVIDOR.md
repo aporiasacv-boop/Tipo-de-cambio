@@ -11,18 +11,16 @@ Ver `requirements.txt` (Git, Java 21, VS Code).
 - Internet
 - Cuenta con permisos para crear tareas programadas (opcional)
 
-## Instalación rápida
+## Instalación rápida (botones — doble clic)
 
-1. Abre **CMD** o **PowerShell** como usuario normal.
-2. Ejecuta:
+1. Clona el repo en `C:\Olnatura\TipoCambio`
+2. **Doble clic** en `INICIO.cmd` (menú) o en este orden:
+   - `1-Instalar.cmd` — primera vez (credenciales + compila JAR)
+   - `2-Ejecutar-ahora.cmd` — prueba
+   - `3-Vigilar-24-7.cmd` — dejar corriendo 24/7
+3. Opcional: `5-Crear-botones-escritorio.cmd` — iconos en el Escritorio
 
-```bat
-git clone https://github.com/olnaturaqr-suite/Tipo-de-cambio.git C:\Olnatura\TipoCambio
-cd C:\Olnatura\TipoCambio
-instalar-servidor.cmd
-```
-
-El script instala Git y Java 21 si faltan, pide credenciales y compila el JAR.
+Desde terminal también sirve `instalar-servidor.cmd`.
 
 ### Credenciales
 

@@ -50,8 +50,19 @@ exit /b 0
 :buscar_jar
 set JAR=
 if exist "actualizar-tipo-cambio.jar" set JAR=actualizar-tipo-cambio.jar
-if "%JAR%"=="" (
-  call :diag 1 "No se encuentra actualizar-tipo-cambio.jar en esta carpeta"
+if "!JAR!"=="" if exist "target\actualizar-tipo-cambio.jar" set JAR=target\actualizar-tipo-cambio.jar
+if "!JAR!"=="" (
+  echo.
+  echo No hay JAR. Compilando automaticamente...
+  call "%~dp0compilar-jar.cmd"
+  if errorlevel 1 (
+    call :diag 1 "Falta actualizar-tipo-cambio.jar en !CD! - ejecuta 1-Instalar.cmd con doble clic"
+    exit /b 1
+  )
+  if exist "actualizar-tipo-cambio.jar" set JAR=actualizar-tipo-cambio.jar
+)
+if "!JAR!"=="" (
+  call :diag 1 "Falta actualizar-tipo-cambio.jar en !CD! - ejecuta 1-Instalar.cmd con doble clic"
   exit /b 1
 )
 exit /b 0
