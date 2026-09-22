@@ -4,9 +4,15 @@ cd /d "%~dp0"
 title Tipo de cambio - Ejecutar ahora
 
 echo.
-echo === 2 - EJECUTAR AHORA ===
+echo === EJECUTAR AHORA ===
 echo Carpeta: %CD%
 echo.
+
+call :asegurar_listo
+if errorlevel 1 (
+  pause
+  exit /b 1
+)
 
 call "%~dp0ejecutar.cmd"
 set RC=%ERRORLEVEL%
@@ -25,3 +31,14 @@ if %RC%==0 (
 echo.
 pause
 exit /b %RC%
+
+:asegurar_listo
+if not exist "src\main\resources\application-local.yml" goto instalar
+if exist "actualizar-tipo-cambio.jar" exit /b 0
+if exist "target\actualizar-tipo-cambio.jar" exit /b 0
+:instalar
+echo Falta instalacion. Se ejecutara ahora...
+echo.
+set SILENCIOSO=1
+call "%~dp0Instalar.cmd"
+exit /b %ERRORLEVEL%

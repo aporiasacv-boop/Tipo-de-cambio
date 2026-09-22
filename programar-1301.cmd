@@ -8,6 +8,7 @@ if "%DIR:~-1%"=="\" set DIR=%DIR:~0,-1%
 
 echo.
 echo Crea tarea programada diaria a las 13:01 (USD y EUR ya publicados en Banxico)
+echo Alternativa a dejar Vigilar-24-7.cmd abierto.
 echo Carpeta: %DIR%
 echo.
 echo Requiere CMD como ADMINISTRADOR.

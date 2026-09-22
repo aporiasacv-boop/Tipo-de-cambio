@@ -4,7 +4,7 @@ cd /d "%~dp0"
 title Tipo de cambio - Instalar
 
 echo.
-echo === 1 - INSTALAR Y COMPILAR ===
+echo === INSTALAR Y COMPILAR ===
 echo Carpeta: %CD%
 echo.
 
@@ -33,9 +33,9 @@ echo.
 echo ========================================
 echo   INSTALACION OK
 echo ========================================
-echo Siguiente paso: doble clic en "2-Ejecutar-ahora.cmd"
+echo Siguiente paso: Ejecutar-ahora.cmd o Vigilar-24-7.cmd
 echo.
-pause
+if /I not "%SILENCIOSO%"=="1" pause
 exit /b 0
 
 :fin_error
@@ -44,5 +44,5 @@ echo ========================================
 echo   INSTALACION FALLIDA - revisa arriba
 echo ========================================
 echo.
-pause
+if /I not "%SILENCIOSO%"=="1" pause
 exit /b 1

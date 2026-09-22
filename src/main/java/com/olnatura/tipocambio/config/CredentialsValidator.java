@@ -25,11 +25,12 @@ public class CredentialsValidator {
 
     private static void validarCampo(String nombre, String valor) {
         if (valor == null || valor.isBlank()) {
-            throw new IllegalStateException("Falta variable de entorno: " + nombre);
-        }
-        if (valor.startsWith("${")) {
             throw new IllegalStateException(
-                    "Credencial sin valor: " + nombre + ". Revisa application.yml o variables de entorno.");
+                    "Falta credencial: " + nombre + ". Revisa application-local.yml o variables de entorno.");
+        }
+        if (valor.startsWith("${") || valor.startsWith("PEGAR_")) {
+            throw new IllegalStateException(
+                    "Credencial sin valor: " + nombre + ". Revisa application-local.yml o variables de entorno.");
         }
     }
 }

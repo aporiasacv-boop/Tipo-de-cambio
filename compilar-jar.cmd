@@ -15,7 +15,7 @@ if not exist "src\main\resources\application-local.yml" (
   echo Archivo que falta:
   echo   %CD%\src\main\resources\application-local.yml
   echo.
-  echo Solucion: ejecuta 1-Instalar.cmd o copia el ejemplo:
+  echo Solucion: ejecuta Instalar.cmd o copia el ejemplo:
   echo   copy src\main\resources\application-local.yml.example src\main\resources\application-local.yml
   exit /b 1
 )

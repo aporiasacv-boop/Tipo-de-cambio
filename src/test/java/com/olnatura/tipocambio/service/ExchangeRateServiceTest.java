@@ -1,6 +1,5 @@
 package com.olnatura.tipocambio.service;
 
-import com.olnatura.tipocambio.model.ParDivisa;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -71,13 +70,6 @@ class ExchangeRateServiceTest {
                 LocalDate.of(2026, 6, 9));
 
         assertTrue(faltantes.contains(LocalDate.of(2026, 6, 9)));
-    }
-
-    @Test
-    void usdFechaFinIncluyeMananaPublicadaEnBanxico() {
-        LocalDate hoy = LocalDate.of(2026, 6, 8);
-        LocalDate ultimaBanxico = LocalDate.of(2026, 6, 9);
-        assertEquals(ultimaBanxico, ParDivisa.USD_MXN.calcularFechaFin(hoy, ultimaBanxico));
     }
 
     @Test

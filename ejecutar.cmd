@@ -56,13 +56,13 @@ if "!JAR!"=="" (
   echo No hay JAR. Compilando automaticamente...
   call "%~dp0compilar-jar.cmd"
   if errorlevel 1 (
-    call :diag 1 "Falta actualizar-tipo-cambio.jar en !CD! - ejecuta 1-Instalar.cmd con doble clic"
+    call :diag 1 "Falta actualizar-tipo-cambio.jar en !CD! - ejecuta Instalar.cmd"
     exit /b 1
   )
   if exist "actualizar-tipo-cambio.jar" set JAR=actualizar-tipo-cambio.jar
 )
 if "!JAR!"=="" (
-  call :diag 1 "Falta actualizar-tipo-cambio.jar en !CD! - ejecuta 1-Instalar.cmd con doble clic"
+  call :diag 1 "Falta actualizar-tipo-cambio.jar en !CD! - ejecuta Instalar.cmd"
   exit /b 1
 )
 exit /b 0
@@ -110,7 +110,7 @@ if "%EXIT_CODE%"=="10" (
   exit /b 10
 )
 if "%EXIT_CODE%"=="11" (
-  call :diag 11 "Error Banxico - token, red o serie SF60653"
+  call :diag 11 "Error Banxico - token, red o series SF60653/SF46410"
   exit /b 11
 )
 if "%EXIT_CODE%"=="12" (

@@ -2,8 +2,6 @@ package com.olnatura.tipocambio.model;
 
 import com.olnatura.tipocambio.client.BanxicoClient;
 
-import java.time.LocalDate;
-
 public record ParDivisa(
         String fromCurrency,
         String toCurrency,
@@ -17,10 +15,5 @@ public record ParDivisa(
 
     public String etiqueta() {
         return fromCurrency + "/" + toCurrency;
-    }
-
-    /** Hasta la ultima fecha que Banxico devolvio en la API (sin inventar dias). */
-    public LocalDate calcularFechaFin(LocalDate hoy, LocalDate ultimaFechaBanxico) {
-        return ultimaFechaBanxico;
     }
 }

@@ -1,24 +1,21 @@
-# Tipo de cambio — requisitos para PC servidor (terminal VS Code)
+# Tipo de cambio — requisitos para PC servidor
+
 # Maven va incluido en el repo (mvnw.cmd); no hace falta instalarlo aparte.
 
 # --- Paquetes Windows (winget) ---
 Git.Git
 EclipseAdoptium.Temurin.21.JDK
-Microsoft.VisualStudioCode
 
-# --- Instalar todo desde terminal VS Code ---
+# --- Instalar todo desde terminal ---
 # winget install --id Git.Git -e --accept-source-agreements --accept-package-agreements
 # winget install --id EclipseAdoptium.Temurin.21.JDK -e --accept-source-agreements --accept-package-agreements
-# winget install --id Microsoft.VisualStudioCode -e --accept-source-agreements --accept-package-agreements
 
 # --- Despues de clonar ---
 # git clone https://github.com/olnaturaqr-suite/Tipo-de-cambio.git C:\Olnatura\TipoCambio
 # cd C:\Olnatura\TipoCambio
 # copy src\main\resources\application-local.yml.example src\main\resources\application-local.yml
 # notepad src\main\resources\application-local.yml
-# Doble clic (botones):
+# Doble clic:
 # INICIO.cmd
-# 1-Instalar.cmd
-# 2-Ejecutar-ahora.cmd
-# 3-Vigilar-24-7.cmd
-# 5-Crear-botones-escritorio.cmd
+# Ejecutar-ahora.cmd
+# Vigilar-24-7.cmd

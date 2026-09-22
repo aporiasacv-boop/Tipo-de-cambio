@@ -68,10 +68,10 @@ echo JAR listo: actualizar-tipo-cambio.jar
 
 echo.
 echo Prueba manual:
-echo   ejecutar.cmd
+echo   Ejecutar-ahora.cmd
 echo.
-echo Para dejarlo corriendo 24/7 (recomendado por direccion):
-echo   vigilar-1301.cmd
+echo Para dejarlo corriendo 24/7:
+echo   Vigilar-24-7.cmd
 echo.
 echo Alternativa con tarea de Windows a las 13:01:
 echo   programar-1301.cmd   (como administrador)

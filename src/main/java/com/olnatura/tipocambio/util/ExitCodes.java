@@ -24,7 +24,8 @@ public final class ExitCodes {
         String lower = msg.toLowerCase();
 
         if (lower.contains("credencial") || lower.contains("banxico_token")
-                || lower.contains("dynamics_") || lower.contains("falta variable")) {
+                || lower.contains("dynamics_") || lower.contains("falta variable")
+                || lower.contains("falta credencial")) {
             return CREDENCIALES;
         }
         if (lower.contains("banxico")) {
@@ -44,7 +45,7 @@ public final class ExitCodes {
         return switch (code) {
             case OK -> "OK - ejecucion correcta";
             case CREDENCIALES -> "Credenciales faltantes o invalidas (revisa application-local.yml)";
-            case BANXICO -> "Error al consultar Banxico (token, red o serie SF60653)";
+            case BANXICO -> "Error al consultar Banxico (token, red o series SF60653/SF46410)";
             case DYNAMICS -> "Error al conectar o escribir en Dynamics";
             case PROCESO_PARCIAL -> "Algunas fechas fallaron al insertarse";
             case INESPERADO -> "Error inesperado - ver detalle arriba en el log";

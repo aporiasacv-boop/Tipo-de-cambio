@@ -1,10 +1,11 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
 cd /d "%~dp0"
+title Tipo de cambio - Vigilar 24/7
 
 echo.
-echo === Tipo de cambio - vigilancia 24/7 ===
-echo Ejecuta actualizar-tipo-cambio cada dia a las 13:01 (hora Mexico).
+echo === VIGILAR 24/7 ===
+echo Ejecuta el tipo de cambio cada dia a las 13:01 (hora Mexico).
 echo USD y EUR: Banxico publica el euro cerca de la 1 pm.
 echo Carpeta: %CD%
 echo Log diario: logs\tipo-cambio-AAAAMMDD.log
@@ -12,6 +13,21 @@ echo.
 echo Deja esta ventana abierta. Ctrl+C para detener.
 echo.
 
+if not exist "src\main\resources\application-local.yml" goto instalar
+if exist "actualizar-tipo-cambio.jar" goto listo
+if exist "target\actualizar-tipo-cambio.jar" goto listo
+
+:instalar
+echo Falta instalacion. Se ejecutara ahora...
+echo.
+set SILENCIOSO=1
+call "%~dp0Instalar.cmd"
+if errorlevel 1 (
+  pause
+  exit /b 1
+)
+
+:listo
 set ULTIMA_EJECUCION=
 
 :loop

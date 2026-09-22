@@ -53,13 +53,12 @@ public class ExchangeRateService {
             throw new IllegalStateException("Banxico no devolvio datos para la serie " + par.serieBanxico());
         }
 
-        LocalDate fechaFin = par.calcularFechaFin(hoy, ultimaFechaBanxico);
-        LocalDate fechaDesde = ventanaDesde;
+        LocalDate fechaFin = ultimaFechaBanxico;
         List<LocalDate> fechasFaltantes = listarFechasFaltantesConDatoBanxico(
-                fechasExistentes, tasasPorFecha, fechaDesde, fechaFin);
+                fechasExistentes, tasasPorFecha, ventanaDesde, fechaFin);
 
         log.info("{} hoy: {}, Banxico ultima: {}, rango: {} a {}, faltantes con dato API: {}",
-                par.etiqueta(), hoy, ultimaFechaBanxico, fechaDesde, fechaFin, fechasFaltantes.size());
+                par.etiqueta(), hoy, ultimaFechaBanxico, ventanaDesde, fechaFin, fechasFaltantes.size());
 
         if (fechasFaltantes.isEmpty()) {
             log.info("{} al dia hasta {}", par.etiqueta(), fechaFin);

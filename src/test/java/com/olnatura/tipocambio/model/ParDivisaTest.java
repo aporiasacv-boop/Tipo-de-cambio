@@ -2,30 +2,19 @@ package com.olnatura.tipocambio.model;
 
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ParDivisaTest {
 
     @Test
-    void usdHastaUltimaFechaBanxico() {
-        LocalDate ultimaBanxico = LocalDate.of(2026, 6, 10);
-        assertEquals(ultimaBanxico, ParDivisa.USD_MXN.calcularFechaFin(
-                LocalDate.of(2026, 6, 9), ultimaBanxico));
+    void usdUsaSerieDePagosBanxico() {
+        assertEquals("USD/MXN", ParDivisa.USD_MXN.etiqueta());
+        assertEquals("SF60653", ParDivisa.USD_MXN.serieBanxico());
     }
 
     @Test
-    void euroNoInsertaHoySiBanxicoSoloTieneAyer() {
-        LocalDate hoy = LocalDate.of(2026, 6, 9);
-        LocalDate ultimaBanxico = LocalDate.of(2026, 6, 8);
-        assertEquals(ultimaBanxico, ParDivisa.EUR_MXN.calcularFechaFin(hoy, ultimaBanxico));
-    }
-
-    @Test
-    void euroHastaUltimaPublicada() {
-        LocalDate ultimaBanxico = LocalDate.of(2026, 6, 8);
-        assertEquals(ultimaBanxico, ParDivisa.EUR_MXN.calcularFechaFin(
-                LocalDate.of(2026, 6, 8), ultimaBanxico));
+    void euroUsaSerieBanxico() {
+        assertEquals("EUR/MXN", ParDivisa.EUR_MXN.etiqueta());
+        assertEquals("SF46410", ParDivisa.EUR_MXN.serieBanxico());
     }
 }

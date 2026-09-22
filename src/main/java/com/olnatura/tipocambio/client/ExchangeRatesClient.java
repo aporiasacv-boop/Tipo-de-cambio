@@ -54,10 +54,6 @@ public class ExchangeRatesClient {
         return fechas;
     }
 
-    public Set<LocalDate> listarFechasUsdMxnDesde(LocalDate desde) {
-        return listarFechasDesde(ParDivisa.USD_MXN, desde);
-    }
-
     static URI uriListarDesde(String baseUrl, ParDivisa par, LocalDate desde) {
         String filtro = String.format(
                 "FromCurrency eq '%s' and ToCurrency eq '%s' and StartDate ge %s",
@@ -87,10 +83,6 @@ public class ExchangeRatesClient {
                 .toBodilessEntity();
     }
 
-    public void crearTipoCambio(BigDecimal rate, LocalDate fecha) {
-        crearTipoCambio(ParDivisa.USD_MXN, rate, fecha);
-    }
-
     static ExchangeRateCreateRequest buildExchangeRateCreateRequest(
             ParDivisa par, BigDecimal rate, LocalDate fecha) {
         ExchangeRateCreateRequest request = new ExchangeRateCreateRequest();
@@ -101,10 +93,6 @@ public class ExchangeRatesClient {
         request.setRate(rate);
         request.setConversionFactor("One");
         return request;
-    }
-
-    static ExchangeRateCreateRequest buildExchangeRateCreateRequest(BigDecimal rate, LocalDate fecha) {
-        return buildExchangeRateCreateRequest(ParDivisa.USD_MXN, rate, fecha);
     }
 
     private String normalizarBaseUrl() {

@@ -1,6 +1,7 @@
 package com.olnatura.tipocambio.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.olnatura.tipocambio.model.ParDivisa;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -19,7 +20,7 @@ class ExchangeRatesClientTest {
         BigDecimal rate = new BigDecimal("17.2720");
         LocalDate fecha = LocalDate.of(2026, 5, 27);
 
-        var payload = ExchangeRatesClient.buildExchangeRateCreateRequest(rate, fecha);
+        var payload = ExchangeRatesClient.buildExchangeRateCreateRequest(ParDivisa.USD_MXN, rate, fecha);
 
         String json = objectMapper.writeValueAsString(payload);
 
