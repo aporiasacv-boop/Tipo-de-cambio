@@ -1,5 +1,6 @@
 package com.olnatura.tipocambio;
 
+import com.olnatura.tipocambio.config.StartupFailureHandler;
 import com.olnatura.tipocambio.service.ExchangeRateService;
 import com.olnatura.tipocambio.util.ExitCodes;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,15 @@ public class Application {
     private final ExchangeRateService exchangeRateService;
 
     public static void main(String[] args) {
-        System.exit(SpringApplication.exit(SpringApplication.run(Application.class, args)));
+        SpringApplication app = new SpringApplication(Application.class);
+        app.addListeners(new StartupFailureHandler());
+        try {
+            System.exit(SpringApplication.exit(app.run(args)));
+        } catch (Throwable t) {
+            int code = ExitCodes.fromThrowable(t);
+            System.err.println("CODIGO_SALIDA=" + code + " - " + ExitCodes.mensaje(code));
+            System.exit(code);
+        }
     }
 
     @Bean

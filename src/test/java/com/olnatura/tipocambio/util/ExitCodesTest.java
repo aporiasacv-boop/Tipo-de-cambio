@@ -36,6 +36,14 @@ class ExitCodesTest {
     }
 
     @Test
+    void clasificaCredencialEnvuelta() {
+        Throwable wrapped = new IllegalStateException(
+                "Error creating bean with name 'credentialsValidator'",
+                new IllegalStateException("Credencial sin valor: BANXICO_TOKEN"));
+        assertEquals(ExitCodes.CREDENCIALES, ExitCodes.fromThrowable(wrapped));
+    }
+
+    @Test
     void clasificaFaltaCredencial() {
         int code = ExitCodes.fromThrowable(
                 new IllegalStateException("Falta credencial: BANXICO_TOKEN"));
