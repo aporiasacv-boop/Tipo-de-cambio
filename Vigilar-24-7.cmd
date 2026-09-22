@@ -5,8 +5,9 @@ title Tipo de cambio - Vigilar 24/7
 
 echo.
 echo === VIGILAR 24/7 ===
-echo Ejecuta el tipo de cambio cada dia a las 13:01 (hora Mexico).
-echo USD y EUR: Banxico publica el euro cerca de la 1 pm.
+echo Ejecuta el tipo de cambio 5 veces al dia (hora Mexico):
+echo   00:01  07:00  13:01  15:00  18:00
+echo Solo inserta fechas nuevas de Banxico que falten en Dynamics.
 echo Carpeta: %CD%
 echo Log diario: logs\tipo-cambio-AAAAMMDD.log
 echo.
@@ -41,13 +42,21 @@ for /f "tokens=1,2 delims= " %%a in ("!AHORA!") do (
   set HORA_MX=%%b
 )
 
-if not "!HORA_MX!"=="13:01" goto esperar
-if "!ULTIMA_EJECUCION!"=="!FECHA_HOY!" goto esperar
+set SLOT=
+if "!HORA_MX!"=="00:01" set SLOT=00:01
+if "!HORA_MX!"=="07:00" set SLOT=07:00
+if "!HORA_MX!"=="13:01" set SLOT=13:01
+if "!HORA_MX!"=="15:00" set SLOT=15:00
+if "!HORA_MX!"=="18:00" set SLOT=18:00
+if "!SLOT!"=="" goto esperar
 
-echo !AHORA! - iniciando actualizacion...
-call ejecutar.cmd
-set ULTIMA_EJECUCION=!FECHA_HOY!
-echo Esperando al siguiente dia...
+set CLAVE=!FECHA_HOY! !SLOT!
+if "!ULTIMA_EJECUCION!"=="!CLAVE!" goto esperar
+
+echo !AHORA! - iniciando actualizacion ^(horario !SLOT!^)...
+call "%~dp0ejecutar.cmd"
+set ULTIMA_EJECUCION=!CLAVE!
+echo Esperando al siguiente horario...
 timeout /t 90 /nobreak >nul
 
 :esperar

@@ -10,7 +10,7 @@ echo  ============================================
 echo       TIPO DE CAMBIO - OL NATURA
 echo  ============================================
 echo  Carpeta: %CD%
-echo  Horario: todos los dias a las 13:01 (Mexico)
+echo  Horarios: 00:01  07:00  13:01  15:00  18:00  ^(Mexico^)
 echo.
 echo   [1] Ejecutar ahora
 echo   [2] Vigilar 24/7

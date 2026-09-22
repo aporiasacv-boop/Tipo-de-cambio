@@ -61,7 +61,8 @@ public class ExchangeRateService {
                 par.etiqueta(), hoy, ultimaFechaBanxico, ventanaDesde, fechaFin, fechasFaltantes.size());
 
         if (fechasFaltantes.isEmpty()) {
-            log.info("{} al dia hasta {}", par.etiqueta(), fechaFin);
+            log.info("{} sin cambios: Dynamics ya tiene las fechas publicadas hasta {}",
+                    par.etiqueta(), fechaFin);
             return;
         }
 

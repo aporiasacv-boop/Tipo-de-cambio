@@ -1,7 +1,14 @@
 # Servidor 24/7 — Tipo de cambio
 
-Actualiza USD/MXN y EUR/MXN en Dynamics **cada día a las 13:01** (hora Ciudad de México). El euro en Banxico suele publicarse cerca de la 1 pm.
-**Solo inserta fechas que Banxico publicó en su API.** Si un día no está en la API, no se sube.
+Actualiza USD/MXN y EUR/MXN en Dynamics **5 veces al día** (hora Ciudad de México):
+
+- **00:01** madrugada
+- **07:00** mañana
+- **13:01** (Banxico suele publicar el euro cerca de la 1 pm)
+- **15:00** tarde
+- **18:00** tarde
+
+**Solo inserta fechas que Banxico publicó en su API y que aún no están en Dynamics.** Si no hay nada nuevo, no escribe. No rellena fines de semana ni huecos.
 
 ## Requisitos en la PC servidor
 
@@ -15,7 +22,7 @@ Ver `requirements.txt` (Git, Java 21).
 1. Clona el repo en `C:\Olnatura\TipoCambio`
 2. Doble clic en `INICIO.cmd` y elige:
    - **Ejecutar ahora** — una corrida inmediata
-   - **Vigilar 24/7** — deja la ventana abierta; corre solo a las 13:01
+   - **Vigilar 24/7** — deja la ventana abierta; corre en los 5 horarios
 3. La primera vez pide credenciales y compila el JAR (`Instalar.cmd`).
 
 Desde terminal también sirve `instalar-servidor.cmd`.
@@ -35,10 +42,11 @@ Completa `banxico.token` y los valores de `dynamics.*`.
 
 ```bat
 cd C:\Olnatura\TipoCambio
+git pull
 Vigilar-24-7.cmd
 ```
 
-Deja esa ventana abierta. A las **13:01** ejecuta una vez por día.
+Deja esa ventana abierta. En cada horario ejecuta una vez si toca.
 Logs: `logs\tipo-cambio-AAAAMMDD.log`
 
 ## Alternativa: tarea de Windows (sin terminal abierta)
@@ -47,7 +55,7 @@ CMD **como administrador**:
 
 ```bat
 cd C:\Olnatura\TipoCambio
-programar-1301.cmd
+programar-horarios.cmd
 ```
 
 ## Prueba manual
@@ -56,7 +64,7 @@ programar-1301.cmd
 Ejecutar-ahora.cmd
 ```
 
-Código 0 = OK. Ver `[DIAG]` en pantalla y en el log.
+Código 0 = OK. Ver `[DIAG]` en pantalla y en el log. Si ya estaba al día, termina 0 sin crear registros.
 
 ## Configuración recomendada de Windows
 
@@ -69,3 +77,4 @@ Código 0 = OK. Ver `[DIAG]` en pantalla y en el log.
 2. Compara con Dynamics en ventana de 14 días
 3. Crea solo registros **faltantes** cuya fecha **existe en la API**
 4. No inventa fines de semana ni rellena huecos
+5. Si Dynamics ya tiene esas fechas, no actualiza nada

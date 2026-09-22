@@ -73,7 +73,7 @@ echo.
 echo Para dejarlo corriendo 24/7:
 echo   Vigilar-24-7.cmd
 echo.
-echo Alternativa con tarea de Windows a las 13:01:
-echo   programar-1301.cmd   (como administrador)
+echo Alternativa con tarea de Windows (00:01 07:00 13:01 15:00 18:00):
+echo   programar-horarios.cmd   (como administrador)
 echo.
 exit /b 0
